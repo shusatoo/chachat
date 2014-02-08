@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>chachat</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+    var socket = io.connect('http://chachat.local');
+
+    // サーバーからのイベント
+    socket.on('connect', function() {});
+    socket.on('disconnect', function(client) {});
+    socket.on('msg_to_client', function(data) {
+      addMessage(data.value);
+    });
+
+    // クライアントからイベント送信
+    function sendMessage() {
+      var msg = $('#message').val();
+      $('#message').val('');
+      socket.emit('msg_to_server', {value: msg});
+    }
+
+    function sendBroadcast() {
+      var msg = $('#message').val();
+      $('#message').val('');
+      socket.emit('bcast_to_server', {value: msg});
+    }
+
+    function addMessage(value, color, size) {
+      var msg = value.replace(/[!@$%<>&|]/g, '');
+      $('#msg_list').prepend('<div class="msg">' + msg + '</div>');
+    }
+  </script>
+</head>
+<body>
+  <div id="msg_list"></div>
+  <form action="" method="post" onsubmit="return false;">
+    <input type="text" class="text" id="message">
+    <input type="submit" class="button" onclick="sendMessage();" value="送信">
+    <input type="submit" class="button" onclick="sendBroadcast();" value="自分以外に送信">
+  </form>
+</body>
+</html>
